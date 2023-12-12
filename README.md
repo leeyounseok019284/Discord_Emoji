@@ -17,7 +17,7 @@ TtS가 어색하게 느껴지는 이유 중 가장 큰 것은, 감정을 표현�
 >어떤 오픈소스를 사용하였는지 설명합니다.
 >어떤 부분이 수정되었는지 설명합니다.
 ---
-[tweetvec2주소](https://github.com/imradhakrishnan/EmojiRecommender, "이모티콘을 추천해주는 프로그램입니다. 다른 github 주소로 연결됩니다.")
+[tweetvec2주소](https://github.com/Bartuzen/DiscordEmojiDownloader.git, "이모티콘을 추천해주는 프로그램입니다. 다른 github 주소로 연결됩니다.")
 * 이모티콘을 추천해주는 프로그램입니다.
 * 코드
   
