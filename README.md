@@ -76,26 +76,97 @@
 ---
 [원본코드 - DiscordEmojiDownloader](https://github.com/Bartuzen/DiscordEmojiDownloader.git)
 
-* 이 코드의 주요 장점은, 이 코드를 공유할 경우 봇의 정보와 서버 ID만 있다면 서버 내에 있는 이모티콘을 다른 사람도 다운로드 할 수 있다는 점입니다. 하지만 봇의 토큰과 서버 ID를 공개하는 경우 개인정보가 위험할 수 있습니다. 따라서 사용자는 신중하게 사용해야 합니다.
+* 디스코드 서버에서 사용할 수 있는 이모티콘들을 다운로드하는 프로그램입니다.
+  
+* 수정한 코드의 주요 장점은, 이 코드를 공유할 경우 봇의 정보와 서버 ID만 있다면 서버 내에 있는 이모티콘을 다른 사람도 다운로드 할 수 있다는 점입니다.
+* 하지만 봇의 토큰과 서버 ID를 공개하는 경우 개인정보가 위험할 수 있습니다. 따라서 사용자는 신중하게 사용해야 합니다.
 
-* 코드
-  
-  `[average_main.py]`
-  
-  트윗 임베딩 :
-  
-   best_model 디렉토리에 저장된 모델을 사용하여 트윗을 임베딩하는 encode_char.py라는 스크립트를 호출.
-   임베딩 결과를 (.npy 형식으로) CSV 파일로 변환.
-  교차 검증용 데이터 분할 :
-  
-  k-폴드 교차 검증(k=5)을 사용하여 데이터를 교육 및 테스트 세트로 분할,
-  분할된 데이터를 별도의 CSV 파일에 저장.
-  이모지 임베딩 :
-   EmojiEmbeddings.py라는 스크립트를 사용해 이모지를 임베딩.
-  이모지 추천 :
-   EmojiRecommender.py라는 스크립트를 사용하여 코사인 유사성, 랭킹 및 정확도 계산을 통해 이모지를 추천.
+* 코드설명
+
+DiscordBotWorker 클래스 : 사용자의 입력에 따라 Discord 봇을 실행하고, 해당 서버의이모지를 다운로드하는 클래스입니다.
+
+__init__ 함수 : 프로그램이 실행된 후 모든 값 즉, 봇의 토큰 칸, 서버 아이디,
+파일 디렉토리등을 전부 초기화해서 새로 입력 할 수 있도록 하는 생성자 함수입니다.
+
+run 함수 : 사용자가 원할 때 프로그램을 실행시킬 수 있는 루프를 생성하고, 디스코드 봇을 시작하는 ‘download_emojis‘ 함수를 실행합니다.
+
+download_emojis 함수 : 디스코드의 봇을 생성하고, 봇이 서버에 연결되면 이를 이용해
+서버의 이모지를 다운로드하는 함수입니다.
+
+on_ready 함수 : 대부분 github의 코드를 참고한 코드입니다. start가 프린트되면
+다운로드가 시작되고, 다운로드 중 서버 내에 있는 이모티콘들을 찾아내는 함수입니다.
+
+download_image 함수 : 사용자로부터 주어진 URL에서 이미지를 다운로드하고, 지정된
+저장 경로에 저장하는 함수입니다. 시작시 오류 확인을 위해 프린트 함수를 사용했습니다.
+
+DiscordBotDownloader 클래스 : 파이썬 모듈 모음인 PyQt5를 사용하여 GUI를 구현한
+클래스입니다.
+
+__init__ 함수 : 앞서 이야기 했던 같은 함수와 같이 생성자 역할을 합니다.
+
+init_ui 함수 : GUI의 초기 설정을 수행합니다. 토큰, 서버 아이디, 다운로드 경로를
+입력받을 수 있는 텍스트 입력란과 시작 버튼을 생성하고 배치합니다.
+
+choose_directory 함수 : "경로 선택" 버튼이 눌리면 다운로드 경로를 선택하는 대화상자가 열리도록 하는 함수입니다.
+
+start_download 함수 : "다운로드" 버튼이 클릭되면 입력된 토큰, 서버 아이디, 다운로드 경로를 가져와 DiscordBotWorker 클래스를 활성화하고 해당 클래스의 run 함수를 실행합니다. 토큰, 서버 아이디나 다운로드 경로가 잘못되었다면 오류 메시지를 출력해주는 기능을 추가했습니다.
+
+download_finished 함수 : DiscordBotWorker에서 이모지 다운로드가 완료되면 호출되어 성공 메시지를 표시합니다.
+
+show_message 함수 : PyQt의 QMessageBox를 이용하여 모든 메시지 박스를 생성하고
+실행합니다.
+
+__코드 수정__
 ```
-이전코드
-->
-변경 후 코드
+def download_image(url, name):
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.137 Safari/537.36'}
+    extension = url[-3:]
+    response = requests.get(url, stream=True, headers=headers)
+    with open(f"images\\{name}.{extension}", 'wb') as out_file:
+        shutil.copyfileobj(response.raw, out_file)
+>>
+async def download_image(self, url, name):
+        try:
+            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.137 Safari/537.36'}
+            response = requests.get(url, stream=True, headers=headers)
+            response.raise_for_status()  # Check for HTTP errors
+            extension = url[-3:]
+            with open(os.path.join(self.download_directory, f"{name}.{extension}"), 'wb') as out_file:
+                shutil.copyfileobj(response.raw, out_file)
+            print(f"Downloaded: {name}")
+        except requests.exceptions.HTTPError as errh:
+            print(f"HTTP Error: {errh}")
+        except requests.exceptions.ConnectionError as errc:
+            print(f"Error Connecting: {errc}")
+        except requests.exceptions.Timeout as errt:
+            print(f"Timeout Error: {errt}")
+        except requests.exceptions.RequestException as err:
+            print(f"Request Exception: {err}")
+```
+```
+class Bot(discord.Client):
+    async def on_ready(self):
+        print("Started")
+        guild = self.get_guild(guild_id)
+        emojis = guild.emojis
+        for each in emojis:
+            if each.animated:
+                download_image(f"https://cdn.discordapp.com/emojis/{each.id}.gif", each.name)
+            else:
+                download_image(f"https://cdn.discordapp.com/emojis/{each.id}.png", each.name)
+        print("Finished")
+>>
+async def on_ready():
+                    print("Started")
+                    for guild in bot.guilds:
+                        if guild.id == self.guild_id:
+                            emojis = guild.emojis
+                            for each in emojis:
+                                if each.animated:
+                                    await self.download_image(f"https://cdn.discordapp.com/emojis/{each.id}.gif", each.name)
+                                else:
+                                    await self.download_image(f"https://cdn.discordapp.com/emojis/{each.id}.png", each.name)
+                            print("Finished")
+                            self.finished.emit()
+                            await bot.close()
 ```
