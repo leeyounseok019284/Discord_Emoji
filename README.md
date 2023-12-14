@@ -75,7 +75,7 @@
 >어떤 부분이 수정되었는지 설명합니다.
 ---
 [원본코드 - DiscordEmojiDownloader](https://github.com/Bartuzen/DiscordEmojiDownloader.git)
-
+[참고코드(open함수 학습)](https://www.freecodecamp.org/news/python-write-to-file-open-read-append-and-other-file-handling-functions-explained/)
 * 디스코드 서버에서 사용할 수 있는 이모티콘들을 다운로드하는 프로그램입니다.
   
 * 수정한 코드의 주요 장점은, 이 코드를 공유할 경우 봇의 정보와 서버 ID만 있다면 서버 내에 있는 이모티콘을 다른 사람도 다운로드 할 수 있다는 점입니다.
